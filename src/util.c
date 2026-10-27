@@ -1514,20 +1514,23 @@ static char *u2string_async_signal_safe(int _base, uint64_t val, char *buf) {
 static char *i2string_async_signal_safe(int base, int64_t val, char *buf) {
     char *orig_buf = buf;
     const int32_t is_neg = (val < 0);
+    uint64_t uval;
     *buf-- = 0;
 
     if (is_neg) {
-        val = -val;
+        uval = (uint64_t)(-(val + 1)) + 1;
+    } else {
+        uval = (uint64_t)val;
     }
     if (is_neg && base == 16) {
         int ix;
-        val -= 1;
+        uval -= 1;
         for (ix = 0; ix < 16; ++ix) buf[-ix] = '0';
     }
 
     do {
-        *buf-- = HEX[val % base];
-    } while ((val /= base) != 0);
+        *buf-- = HEX[uval % base];
+    } while ((uval /= base) != 0);
 
     if (is_neg && base == 10) {
         *buf-- = '-';

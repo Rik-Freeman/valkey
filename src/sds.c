@@ -948,9 +948,9 @@ sds sdscatrepr(sds s, const char *p, size_t len) {
         /* The condition here in combination with the loop inside ensures we're calling sdscatlen only once for an
          * entire string chunk rather than calling it for every character. This reduces the amount of memcpy calls.
          * \ and " are valid isprint characters but we need to handle them in the else block below to escape them. */
-        if (isprint(*p) && *p != '\\' && *p != '"') {
+        if (isprint((unsigned char)*p) && *p != '\\' && *p != '"') {
             const char *start = p;
-            while (len && isprint(*p) && *p != '\\' && *p != '"') {
+            while (len && isprint((unsigned char)*p) && *p != '\\' && *p != '"') {
                 len--;
                 p++;
             }
@@ -988,7 +988,7 @@ int sdsneedsrepr(const_sds s) {
 
     while (len--) {
         if (*p == '\\' || *p == '"' || *p == '\n' || *p == '\r' || *p == '\t' || *p == '\a' || *p == '\b' ||
-            !isprint(*p) || isspace(*p))
+            !isprint((unsigned char)*p) || isspace((unsigned char)*p))
             return 1;
         p++;
     }
@@ -1159,7 +1159,7 @@ sds *sdsnsplitargs_internal(const char *line, const char *end, int *argc) {
     *argc = 0;
     while (*p && !isPtrExceedingEnd(p, 0, end)) {
         /* skip blanks */
-        while (*p && !isPtrExceedingEnd(p, 0, end) && isspace(*p)) p++;
+        while (*p && !isPtrExceedingEnd(p, 0, end) && isspace((unsigned char)*p)) p++;
         if (!(*p && !isPtrExceedingEnd(p, 0, end))) break;
 
         unsigned int token_len = 0;
